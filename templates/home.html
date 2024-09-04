@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Frat Basketball Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center">Frat Basketball Tracker</h1>
-        <h3 class="mt-4">Current Season: {{ current_season.name }}</h3>
-        <a href="{{ url_for('current_season') }}" class="btn btn-primary">View Current Season Stats</a>
-        <a href="{{ url_for('add_season') }}" class="btn btn-success">Add New Season</a>
-        <a href="{{ url_for('archive') }}" class="btn btn-secondary">View Archive</a>
+{% extends 'base.html' %}
+
+{% block title %}Home - Beta Ball Basketball Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Beta Ball Basketball Tracker</h1>
+    <h2 class="text-center">Tracking scores, wins, and archives of Beta Theta Pi's quarterly basketball games</h2>
+    <h3 class="mt-4 text-center">Current Season: {{ current_season.name }}</h3>
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{{ url_for('current_season') }}" class="btn btn-primary mx-2">View Current Season Stats</a>
+        <a href="{{ url_for('add_season') }}" class="btn btn-success mx-2">Add New Season</a>
+        <a href="{{ url_for('archive') }}" class="btn btn-secondary mx-2">View Archive</a>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
