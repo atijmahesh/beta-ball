@@ -6,11 +6,75 @@
 <div class="container mt-5">
     <h1 class="text-center">Add New Season</h1>
     <form action="{{ url_for('add_season') }}" method="POST" class="mt-4">
+        <!-- Season Name -->
         <div class="mb-3">
             <label for="season_name" class="form-label">Season Name</label>
-            <input type="text" class="form-control" id="season_name" name="season_name" required>
+            <input type="text" class="form-control" id="season_name" name="season_name" value="{{ season_name or '' }}" required>
         </div>
-        <button type="submit" class="btn btn-success">Add Season</button>
+
+        <!-- Add Teams and Players -->
+        <div id="teams">
+            <h3>Teams</h3>
+            {% for team_idx, team_name in teams %}
+            <div class="team mb-4">
+                <label for="team_name" class="form-label">Team Name</label>
+                <input type="text" class="form-control" id="team_name" name="team_name[]" value="{{ team_name }}" required>
+
+                <div class="players">
+                    <h5 class="mt-3">Players</h5>
+                    {% for player_name in players_by_team[team_idx] %}
+                    <div class="player mb-3">
+                        <input type="text" class="form-control" name="player_name_team_{{ team_idx }}[]" value="{{ player_name }}" placeholder="Player Name" required>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add more players button -->
+                <button type="button" class="btn btn-info btn-sm mt-2" onclick="addPlayer(this)">Add More Players</button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add more teams button -->
+        <button type="button" class="btn btn-info btn-sm mt-4" onclick="addTeam()">Add Another Team</button>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Enter Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>        
+
+        <button type="submit" class="btn btn-success mt-4">Add Season</button>
     </form>
 </div>
+
+<script>
+    let teamCount = {{ teams|length if teams else 1 }};
+
+    function addTeam() {
+        const teamTemplate = `
+            <div class="team mb-4">
+                <label for="team_name" class="form-label">Team Name</label>
+                <input type="text" class="form-control" name="team_name[]" required>
+
+                <div class="players">
+                    <h5 class="mt-3">Players</h5>
+                    <div class="player mb-3">
+                        <input type="text" class="form-control" name="player_name_team_${teamCount}[]" placeholder="Player Name" required>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-info btn-sm mt-2" onclick="addPlayer(this)">Add More Players</button>
+            </div>`;
+        document.getElementById('teams').insertAdjacentHTML('beforeend', teamTemplate);
+        teamCount++;
+    }
+
+    function addPlayer(button) {
+        const teamIndex = button.previousElementSibling.querySelector('.player input').name.match(/\d+/)[0];
+        const playerTemplate = `<div class="player mb-3">
+            <input type="text" class="form-control" name="player_name_team_${teamIndex}[]" placeholder="Player Name" required>
+        </div>`;
+        button.previousElementSibling.insertAdjacentHTML('beforeend', playerTemplate);
+    }
+</script>
 {% endblock %}
