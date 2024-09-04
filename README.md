@@ -4,4 +4,4 @@
 Database: SQLite and SQL Alchemy\
 Backend: Flask (Python)\
 Front-End: HTML\
-Hosting: TBD\
+Hosting: TBD
