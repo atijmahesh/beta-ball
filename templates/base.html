@@ -8,9 +8,11 @@
 </head>
 <body>
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fs-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('home') }}">Beta Ball Basketball Tracker</a>
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Beta Ball Logo" style="height: 100px;" class="me-2 rounded-circle">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -42,6 +44,8 @@
     <footer class="bg-light text-center text-lg-start mt-5">
         <div class="container p-4">
             <p>&copy; 2024 Beta Theta Pi Basketball Tracker</p>
+            <p>Hope you enjoy! Yours in __kai__, -2182-</p>
+            <a href="https://github.com/atijmahesh/beta-ball">The code behind it :)</a>
         </div>
     </footer>
 

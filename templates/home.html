@@ -4,13 +4,24 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Beta Ball Basketball Tracker</h1>
-    <h2 class="text-center">Tracking scores, wins, and archives of Beta Theta Pi's quarterly basketball games</h2>
-    <h3 class="mt-4 text-center">Current Season: {{ current_season.name }}</h3>
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{{ url_for('current_season') }}" class="btn btn-primary mx-2">View Current Season Stats</a>
-        <a href="{{ url_for('add_season') }}" class="btn btn-success mx-2">Add New Season</a>
-        <a href="{{ url_for('archive') }}" class="btn btn-secondary mx-2">View Archive</a>
+    <!-- Logo -->
+    <div class="d-flex justify-content-center">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Beta Ball Logo" class="rounded-circle" style="height: 380px;">
     </div>
+
+    <!-- Title and Description -->
+    <h1 class="text-center mt-3">Beta Ball Basketball Tracker</h1>
+    <h2 class="text-center">Tracking wins, stats, and archives of Beta Theta Pi's quarterly basketball games</h2>
+
+    <!-- Current Season -->
+    <h3 class="mt-4 text-center">Current Season: {{ current_season.name }}</h3>
+
+    <!-- Buttons -->
+<div class="d-flex justify-content-center mt-4">
+    <a href="{{ url_for('current_season') }}" class="btn btn-primary btn-lg mx-2">View Current Season Stats</a>
+    <a href="{{ url_for('game') }}" class="btn btn-success btn-lg mx-2">Play Game</a>
+    <a href="{{ url_for('archive') }}" class="btn btn-secondary btn-lg mx-2">View Archive</a>
+</div>
+
 </div>
 {% endblock %}

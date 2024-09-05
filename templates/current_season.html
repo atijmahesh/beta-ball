@@ -5,32 +5,52 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Current Season Stats: {{ season.name }}</h1>
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>Team Name</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Players</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for team in season.teams %}
-            <tr>
-                <td>{{ team.name }}</td>
-                <td>{{ team.wins }}</td>
-                <td>{{ team.losses }}</td>
-                <td>
-                    <ul>
-                        {% for player in team.players %}
-                        <li><a href="{{ url_for('player', player_id=player.id) }}">{{ player.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- Iterate through each team -->
+    {% for team in season.teams %}
+    <div class="team-section mt-5">
+        <h2 class="text-center">{{ team.name }} - Record: {{ team.wins }} Wins, {{ team.losses }} Losses</h2>
+
+        <!-- Team Player Statistics Table -->
+        <table class="table table-bordered table-hover mt-4">
+            <thead class="thead-light">
+                <tr>
+                    <th>Player Name</th>
+                    <th>Games Played</th>
+                    <th>PPG</th>
+                    <th>RPG</th>
+                    <th>APG</th>
+                    <th>SPG</th>
+                    <th>BPG</th>
+                    <th>Total Points</th>
+                    <th>Total Rebounds</th>
+                    <th>Total Assists</th>
+                    <th>Total Steals</th>
+                    <th>Total Blocks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in team.players %}
+                <tr>
+                    <td><a href="{{ url_for('player', player_id=player.id) }}">{{ player.name }}</a></td>
+                    <td>{{ player.games_played }}</td>
+                    <td>{{ (player.stats[0].points / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                    <td>{{ (player.stats[0].rebounds / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                    <td>{{ (player.stats[0].assists / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                    <td>{{ (player.stats[0].steals / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                    <td>{{ (player.stats[0].blocks / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                    <td>{{ player.stats[0].points }}</td>
+                    <td>{{ player.stats[0].rebounds }}</td>
+                    <td>{{ player.stats[0].assists }}</td>
+                    <td>{{ player.stats[0].steals }}</td>
+                    <td>{{ player.stats[0].blocks }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
     <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
 </div>
 {% endblock %}
