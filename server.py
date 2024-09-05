@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -101,20 +101,73 @@ def player(player_id):
     player = Player.query.get_or_404(player_id)
     return render_template('player.html', player=player)
 
-# Route for recording a game result
 @app.route('/game', methods=['GET', 'POST'])
 def game():
     if request.method == 'POST':
         team1_id = request.form['team1']
         team2_id = request.form['team2']
-        score_team1 = int(request.form['score_team1'])
-        score_team2 = int(request.form['score_team2'])
+
+        # Get the scores (total points for each team)
+        score_team1 = int(request.form.get('score_team1', 0))
+        score_team2 = int(request.form.get('score_team2', 0))
 
         # Find the teams
         team1 = Team.query.get(team1_id)
         team2 = Team.query.get(team2_id)
 
-        # Determine winner and loser
+        # Handle player stats for Team 1
+        for player in team1.players:
+            # Retrieve stats from the form
+            points = int(request.form.get(f'points_1_{player.id}', 0))
+            rebounds = int(request.form.get(f'rebounds_1_{player.id}', 0))
+            assists = int(request.form.get(f'assists_1_{player.id}', 0))
+            blocks = int(request.form.get(f'blocks_1_{player.id}', 0))
+            steals = int(request.form.get(f'steals_1_{player.id}', 0))
+
+            # Only increment games played if player recorded at least one non-zero stat
+            if any([points, rebounds, assists, blocks, steals]):
+                player.games_played += 1
+
+                # Create or update the player's stat record
+                if player.stats:
+                    stat = player.stats[0]  # Assuming one stat record per player
+                    stat.points += points
+                    stat.rebounds += rebounds
+                    stat.assists += assists
+                    stat.blocks += blocks
+                    stat.steals += steals
+                else:
+                    new_stat = Stat(points=points, rebounds=rebounds, assists=assists,
+                                    blocks=blocks, steals=steals, player_id=player.id)
+                    db.session.add(new_stat)
+
+        # Handle player stats for Team 2
+        for player in team2.players:
+            # Retrieve stats from the form
+            points = int(request.form.get(f'points_2_{player.id}', 0))
+            rebounds = int(request.form.get(f'rebounds_2_{player.id}', 0))
+            assists = int(request.form.get(f'assists_2_{player.id}', 0))
+            blocks = int(request.form.get(f'blocks_2_{player.id}', 0))
+            steals = int(request.form.get(f'steals_2_{player.id}', 0))
+
+            # Only increment games played if player recorded at least one non-zero stat
+            if any([points, rebounds, assists, blocks, steals]):
+                player.games_played += 1
+
+                # Create or update the player's stat record
+                if player.stats:
+                    stat = player.stats[0]  # Assuming one stat record per player
+                    stat.points += points
+                    stat.rebounds += rebounds
+                    stat.assists += assists
+                    stat.blocks += blocks
+                    stat.steals += steals
+                else:
+                    new_stat = Stat(points=points, rebounds=rebounds, assists=assists,
+                                    blocks=blocks, steals=steals, player_id=player.id)
+                    db.session.add(new_stat)
+
+        # Determine winner and loser based on final score
         if score_team1 > score_team2:
             team1.wins += 1
             team2.losses += 1
@@ -124,13 +177,35 @@ def game():
         else:
             flash('The game was a tie, no changes to wins/losses', 'info')
 
+        # Commit the changes (both team stats and player stats)
         db.session.commit()
-        flash('Game result updated successfully!', 'success')
+
+        flash('Game result and player stats updated successfully!', 'success')
         return redirect(url_for('home'))
 
+    # Display the game page with teams for the current season
     current_season = Season.query.order_by(Season.start_date.desc()).first()
     teams = Team.query.filter_by(season_id=current_season.id).all()
     return render_template('game.html', teams=teams)
+
+@app.route('/get-players')
+def get_players():
+    team_id = request.args.get('team_id')
+    players = Player.query.filter_by(team_id=team_id).all()
+    player_list = [{'id': player.id, 'name': player.name} for player in players]
+    return jsonify({'players': player_list})
+
+@app.route('/add-player', methods=['POST'])
+def add_player():
+    data = request.get_json()
+    team_id = data['team_id']
+    player_name = data['player_name']
+    new_player = Player(name=player_name, team_id=team_id)
+    db.session.add(new_player)
+    db.session.commit()
+    return jsonify({'message': 'Player added successfully'})
+
+
 
 if __name__ == '__main__':
     with app.app_context():

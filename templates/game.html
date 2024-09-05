@@ -5,33 +5,220 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Update Game Stats</h1>
+
+    <!-- Scoreboard -->
+    <div class="row mt-4">
+        <div class="col-md-6 text-center">
+            <h3 style="color: blue;">Team 1 Score: <span id="team1-score">0</span></h3>
+        </div>
+        <div class="col-md-6 text-center">
+            <h3 style="color: red;">Team 2 Score: <span id="team2-score">0</span></h3>
+        </div>
+    </div>
+
     <form action="{{ url_for('game') }}" method="POST" class="mt-4">
-        <div class="mb-3">
-            <label for="team1" class="form-label">Team 1</label>
-            <select class="form-control" id="team1" name="team1">
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }}</option>
-                {% endfor %}
-            </select>
+        <!-- Hidden fields for final scores -->
+        <input type="hidden" id="score_team1" name="score_team1" value="0">
+        <input type="hidden" id="score_team2" name="score_team2" value="0">
+
+        <div class="row">
+            <!-- Team 1 column -->
+            <div class="col-md-6">
+                <h3>Team 1</h3>
+                <div id="team1-select">
+                    <div class="mb-3">
+                        <label for="team1" class="form-label">Select Team 1</label>
+                        <select class="form-control" id="team1" name="team1">
+                            {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary mt-2" onclick="showTeamTable(1)">Select Team</button>
+                </div>
+
+                <!-- Team name display after selection -->
+                <div id="team1-display" style="display: none;">
+                    <h4>Team 1: <span id="team1-name"></span></h4>
+                </div>
+
+                <!-- Table for players' stats -->
+                <h4>Team 1 Players Stats</h4>
+                <table class="table table-bordered text-center" id="team1-table" style="display: none; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Player</th>
+                            <th style="width: 15%;">Points</th>
+                            <th style="width: 15%;">Rebounds</th>
+                            <th style="width: 15%;">Assists</th>
+                            <th style="width: 15%;">Blocks</th>
+                            <th style="width: 15%;">Steals</th>
+                        </tr>
+                    </thead>
+                    <tbody id="team1-players">
+                        <!-- Players for Team 1 will populate here -->
+                    </tbody>
+                </table>
+
+                <!-- Button for adding new players -->
+                <div class="d-grid gap-2 d-md-block">
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addPlayer(1)">Add Player</button>
+                </div>
+            </div>
+
+            <!-- Team 2 column -->
+            <div class="col-md-6">
+                <h3>Team 2</h3>
+                <div id="team2-select">
+                    <div class="mb-3">
+                        <label for="team2" class="form-label">Select Team 2</label>
+                        <select class="form-control" id="team2" name="team2">
+                            {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary mt-2" onclick="showTeamTable(2)">Select Team</button>
+                </div>
+
+                <!-- Team name display after selection -->
+                <div id="team2-display" style="display: none;">
+                    <h4>Team 2: <span id="team2-name"></span></h4>
+                </div>
+
+                <!-- Table for players' stats -->
+                <h4>Team 2 Players Stats</h4>
+                <table class="table table-bordered text-center" id="team2-table" style="display: none; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Player</th>
+                            <th style="width: 15%;">Points</th>
+                            <th style="width: 15%;">Rebounds</th>
+                            <th style="width: 15%;">Assists</th>
+                            <th style="width: 15%;">Blocks</th>
+                            <th style="width: 15%;">Steals</th>
+                        </tr>
+                    </thead>
+                    <tbody id="team2-players">
+                        <!-- Players for Team 2 will populate here -->
+                    </tbody>
+                </table>
+
+                <!-- Button for adding new players -->
+                <div class="d-grid gap-2 d-md-block">
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addPlayer(2)">Add Player</button>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="team2" class="form-label">Team 2</label>
-            <select class="form-control" id="team2" name="team2">
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }}</option>
-                {% endfor %}
-            </select>
+
+        <!-- Finish Game Button -->
+        <div class="row mt-5">
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-success" onclick="updateFinalScores()">Finish Game</button>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="score_team1" class="form-label">Score Team 1</label>
-            <input type="number" class="form-control" id="score_team1" name="score_team1" required>
-        </div>
-        <div class="mb-3">
-            <label for="score_team2" class="form-label">Score Team 2</label>
-            <input type="number" class="form-control" id="score_team2" name="score_team2" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit Game Stats</button>
+
     </form>
-    <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>
 </div>
+
+<script>
+    // Score update logic
+    function updateScore(teamNum) {
+        const players = document.querySelectorAll(`#team${teamNum}-players input[name^='points_${teamNum}']`);
+        let totalPoints = 0;
+        players.forEach(input => {
+            totalPoints += parseInt(input.value);
+        });
+        document.getElementById(`team${teamNum}-score`).innerText = totalPoints;
+    }
+
+    // Update hidden fields for final scores
+    function updateFinalScores() {
+        document.getElementById('score_team1').value = document.getElementById('team1-score').innerText;
+        document.getElementById('score_team2').value = document.getElementById('team2-score').innerText;
+    }
+
+    // Show the team table and update team name
+    function showTeamTable(teamNum) {
+        // Hide select team and show the table
+        document.getElementById(`team${teamNum}-table`).style.display = 'table';
+        document.getElementById(`team${teamNum}-select`).style.display = 'none';
+        document.getElementById(`team${teamNum}-display`).style.display = 'block';
+
+        // Get and display the selected team name
+        const teamSelect = document.getElementById(`team${teamNum}`);
+        const selectedTeamName = teamSelect.options[teamSelect.selectedIndex].text;
+        document.getElementById(`team${teamNum}-name`).innerText = selectedTeamName;
+
+        // Fetch and display players for the selected team
+        fetchTeamPlayers(teamNum);
+    }
+
+    // Fetch and display players for the selected team in the table
+    function fetchTeamPlayers(teamNum) {
+        const teamId = document.getElementById(`team${teamNum}`).value;
+        fetch(`/get-players?team_id=${teamId}`)
+            .then(response => response.json())
+            .then(data => {
+                let tableHtml = '';
+                data.players.forEach(player => {
+                    tableHtml += `
+                        <tr id="player_${teamNum}_${player.id}">
+                            <td>${player.name}</td>
+                            <td><button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'points', 1)">+</button>
+                                <input type="number" name="points_${teamNum}_${player.id}" value="0" class="stat-input" style="width: 50px;" onchange="updateScore(${teamNum})">
+                                <button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'points', -1)">-</button></td>
+                            <td><button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'rebounds', 1)">+</button>
+                                <input type="number" name="rebounds_${teamNum}_${player.id}" value="0" class="stat-input" style="width: 50px;">
+                                <button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'rebounds', -1)">-</button></td>
+                            <td><button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'assists', 1)">+</button>
+                                <input type="number" name="assists_${teamNum}_${player.id}" value="0" class="stat-input" style="width: 50px;">
+                                <button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'assists', -1)">-</button></td>
+                            <td><button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'blocks', 1)">+</button>
+                                <input type="number" name="blocks_${teamNum}_${player.id}" value="0" class="stat-input" style="width: 50px;">
+                                <button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'blocks', -1)">-</button></td>
+                            <td><button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'steals', 1)">+</button>
+                                <input type="number" name="steals_${teamNum}_${player.id}" value="0" class="stat-input" style="width: 50px;">
+                                <button type="button" class="btn btn-light" onclick="incrementStat(${teamNum}, ${player.id}, 'steals', -1)">-</button></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById(`team${teamNum}-players`).innerHTML = tableHtml;
+                updateScore(teamNum);
+            });
+    }
+
+    // Increment or decrement a stat
+    function incrementStat(teamNum, playerId, statType, value) {
+        const inputField = document.querySelector(`input[name="${statType}_${teamNum}_${playerId}"]`);
+        inputField.value = parseInt(inputField.value) + value;
+        if (inputField.value < 0) {
+            inputField.value = 0; // Prevent negative values
+        }
+        if (statType === 'points') {
+            updateScore(teamNum);
+        }
+    }
+
+    // Add a new player to the team and refresh the table
+    function addPlayer(teamNum) {
+        const playerName = prompt('Enter the new player name:');
+        if (playerName) {
+            const teamId = document.getElementById(`team${teamNum}`).value;
+            fetch(`/add-player`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ team_id: teamId, player_name: playerName })
+            })
+            .then(response => response.json())
+            .then(() => {
+                fetchTeamPlayers(teamNum);
+            });
+        }
+    }
+</script>
+
 {% endblock %}
