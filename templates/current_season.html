@@ -6,50 +6,65 @@
 <div class="container mt-5">
     <h1 class="text-center">Current Season Stats: {{ season.name }}</h1>
 
-    <!-- Iterate through each team -->
-    {% for team in season.teams %}
-    <div class="team-section mt-5">
-        <h2 class="text-center">{{ team.name }} - Record: {{ team.wins }} Wins, {{ team.losses }} Losses</h2>
+    <!-- Check if there are any teams in the current season -->
+    {% if season.teams %}
+        {% for team in season.teams %}
+        <div class="team-section mt-5">
+            <h2 class="text-center">{{ team.name }} - Record: {{ team.wins }} Wins, {{ team.losses }} Losses</h2>
 
-        <!-- Team Player Statistics Table -->
-        <table class="table table-bordered table-hover mt-4">
-            <thead class="thead-light">
-                <tr>
-                    <th>Player Name</th>
-                    <th>Games Played</th>
-                    <th>PPG</th>
-                    <th>RPG</th>
-                    <th>APG</th>
-                    <th>SPG</th>
-                    <th>BPG</th>
-                    <th>Total Points</th>
-                    <th>Total Rebounds</th>
-                    <th>Total Assists</th>
-                    <th>Total Steals</th>
-                    <th>Total Blocks</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for player in team.players %}
-                <tr>
-                    <td><a href="{{ url_for('player', player_id=player.id) }}">{{ player.name }}</a></td>
-                    <td>{{ player.games_played }}</td>
-                    <td>{{ (player.stats[0].points / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
-                    <td>{{ (player.stats[0].rebounds / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
-                    <td>{{ (player.stats[0].assists / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
-                    <td>{{ (player.stats[0].steals / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
-                    <td>{{ (player.stats[0].blocks / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
-                    <td>{{ player.stats[0].points }}</td>
-                    <td>{{ player.stats[0].rebounds }}</td>
-                    <td>{{ player.stats[0].assists }}</td>
-                    <td>{{ player.stats[0].steals }}</td>
-                    <td>{{ player.stats[0].blocks }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endfor %}
+            <!-- Check if the team has players before displaying player stats -->
+            {% if team.players %}
+            <table class="table table-bordered table-hover mt-4">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Player Name</th>
+                        <th>Games Played</th>
+                        <th>PPG</th>
+                        <th>RPG</th>
+                        <th>APG</th>
+                        <th>SPG</th>
+                        <th>BPG</th>
+                        <th>Total Points</th>
+                        <th>Total Rebounds</th>
+                        <th>Total Assists</th>
+                        <th>Total Steals</th>
+                        <th>Total Blocks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in team.players %}
+                    <tr>
+                        <td><a href="{{ url_for('player', player_id=player.id) }}">{{ player.name }}</a></td>
+                        <td>{{ player.games_played }}</td>
+
+                        <!-- Check if the player has stats before accessing them -->
+                        {% if player.stats %}
+                        <td>{{ (player.stats[0].points / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                        <td>{{ (player.stats[0].rebounds / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                        <td>{{ (player.stats[0].assists / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                        <td>{{ (player.stats[0].steals / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                        <td>{{ (player.stats[0].blocks / player.games_played) | round(2) if player.games_played > 0 else 0 }}</td>
+                        <td>{{ player.stats[0].points }}</td>
+                        <td>{{ player.stats[0].rebounds }}</td>
+                        <td>{{ player.stats[0].assists }}</td>
+                        <td>{{ player.stats[0].steals }}</td>
+                        <td>{{ player.stats[0].blocks }}</td>
+                        {% else %}
+                        <!-- If no stats exist for the player -->
+                        <td colspan="12" class="text-center">No stats available</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>No players available for this team.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No teams have been added to this season yet.</p>
+    {% endif %}
 
     <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
 </div>
