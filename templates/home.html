@@ -18,7 +18,7 @@
 
     <!-- Buttons -->
 <div class="d-flex justify-content-center mt-4">
-    <a href="{{ url_for('current_season') }}" class="btn btn-primary btn-lg mx-2">View Current Season Stats</a>
+    <a href="{{ url_for('current_season', season_id=current_season.id) }}" class="btn btn-primary btn-lg mx-2">View Current Season Stats</a>
     <a href="{{ url_for('game') }}" class="btn btn-success btn-lg mx-2">Play Game</a>
     <a href="{{ url_for('archive') }}" class="btn btn-secondary btn-lg mx-2">View Archive</a>
 </div>

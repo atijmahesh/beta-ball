@@ -47,10 +47,10 @@ def home():
     current_season = Season.query.order_by(Season.start_date.desc()).first()
     return render_template('home.html', seasons=seasons, current_season=current_season)
 
-@app.route('/current-season')
-def current_season():
-    current_season = Season.query.order_by(Season.start_date.desc()).first()
-    return render_template('current_season.html', season=current_season)
+@app.route('/season/<int:season_id>')
+def current_season(season_id):
+    season = Season.query.get_or_404(season_id)
+    return render_template('current_season.html', season=season)
 
 @app.route('/add-season', methods=['GET', 'POST'])
 def add_season():
@@ -204,6 +204,12 @@ def add_player():
     db.session.add(new_player)
     db.session.commit()
     return jsonify({'message': 'Player added successfully'})
+
+
+@app.context_processor
+def inject_current_season():
+    current_season = Season.query.order_by(Season.start_date.desc()).first()
+    return dict(current_season=current_season)
 
 
 

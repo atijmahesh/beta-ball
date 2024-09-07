@@ -9,7 +9,10 @@
         {% for season in seasons %}
         <li class="list-group-item">
             <a href="{{ url_for('current_season', season_id=season.id) }}">{{ season.name }}</a>
+            <p>Start Date: {{ season.start_date.strftime('%Y-%m-%d') }}</p>
+            <p>Teams: {{ season.teams|length }}</p>
         </li>
+        
         {% endfor %}
     </ul>
     <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
