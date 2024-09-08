@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
-from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -40,8 +39,6 @@ class Stat(db.Model):
     blocks = db.Column(db.Integer, default=0)
     steals = db.Column(db.Integer, default=0)
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
-
-migrate = Migrate(app, db)
 
 # Routes
 @app.route('/')
