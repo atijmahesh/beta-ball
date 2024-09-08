@@ -211,6 +211,11 @@ def inject_current_season():
     current_season = Season.query.order_by(Season.start_date.desc()).first()
     return dict(current_season=current_season)
 
+@app.route('/create-tables')
+def create_tables():
+    db.create_all()
+    return "Tables created!"
+
 
 
 if __name__ == '__main__':
