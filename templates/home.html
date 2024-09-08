@@ -14,14 +14,22 @@
     <h2 class="text-center">Tracking wins, stats, and archives of Beta Theta Pi's quarterly basketball games</h2>
 
     <!-- Current Season -->
-    <h3 class="mt-4 text-center">Current Season: {{ current_season.name }}</h3>
+    {% if current_season %}
+        <h3 class="mt-4 text-center">Current Season: {{ current_season.name }}</h3>
 
-    <!-- Buttons -->
-<div class="d-flex justify-content-center mt-4">
-    <a href="{{ url_for('current_season', season_id=current_season.id) }}" class="btn btn-primary btn-lg mx-2">View Current Season Stats</a>
-    <a href="{{ url_for('game') }}" class="btn btn-success btn-lg mx-2">Play Game</a>
-    <a href="{{ url_for('archive') }}" class="btn btn-secondary btn-lg mx-2">View Archive</a>
-</div>
+        <!-- Buttons -->
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{{ url_for('current_season', season_id=current_season.id) }}" class="btn btn-primary btn-lg mx-2">View Current Season Stats</a>
+            <a href="{{ url_for('game') }}" class="btn btn-success btn-lg mx-2">Play Game</a>
+        </div>
+    {% else %}
+        <h3 class="mt-4 text-center">No current season available</h3>
+        <!-- Add buttons to allow creation of new seasons or access to archives even if no current season -->
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{{ url_for('add_season') }}" class="btn btn-warning btn-lg mx-2">Add New Season</a>
+            <a href="{{ url_for('archive') }}" class="btn btn-secondary btn-lg mx-2">View Archive</a>
+        </div>
+    {% endif %}
 
 </div>
 {% endblock %}
