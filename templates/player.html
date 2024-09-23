@@ -16,20 +16,28 @@
                     
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Games Played:</strong> {{ player.games_played }}</li>
-                        <li class="list-group-item"><strong>PPG (Points Per Game):</strong> {{ (player.stats[0].points / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
-                        <li class="list-group-item"><strong>RPG (Rebounds Per Game):</strong> {{ (player.stats[0].rebounds / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
-                        <li class="list-group-item"><strong>APG (Assists Per Game):</strong> {{ (player.stats[0].assists / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
-                        <li class="list-group-item"><strong>SPG (Steals Per Game):</strong> {{ (player.stats[0].steals / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
-                        <li class="list-group-item"><strong>BPG (Blocks Per Game):</strong> {{ (player.stats[0].blocks / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                        {% if player.stats %}
+                            <li class="list-group-item"><strong>PPG (Points Per Game):</strong> {{ (player.stats[0].points / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                            <li class="list-group-item"><strong>RPG (Rebounds Per Game):</strong> {{ (player.stats[0].rebounds / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                            <li class="list-group-item"><strong>APG (Assists Per Game):</strong> {{ (player.stats[0].assists / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                            <li class="list-group-item"><strong>SPG (Steals Per Game):</strong> {{ (player.stats[0].steals / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                            <li class="list-group-item"><strong>BPG (Blocks Per Game):</strong> {{ (player.stats[0].blocks / player.games_played) | round(2) if player.games_played > 0 else 0 }}</li>
+                        {% else %}
+                            <li class="list-group-item"><strong>PPG (Points Per Game):</strong> 0</li>
+                            <li class="list-group-item"><strong>RPG (Rebounds Per Game):</strong> 0</li>
+                            <li class="list-group-item"><strong>APG (Assists Per Game):</strong> 0</li>
+                            <li class="list-group-item"><strong>SPG (Steals Per Game):</strong> 0</li>
+                            <li class="list-group-item"><strong>BPG (Blocks Per Game):</strong> 0</li>
+                        {% endif %}
                     </ul>
                     
                     <h5 class="mt-4">Total Stats</h5>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Total Points:</strong> {{ player.stats|sum(attribute='points') }}</li>
-                        <li class="list-group-item"><strong>Total Rebounds:</strong> {{ player.stats|sum(attribute='rebounds') }}</li>
-                        <li class="list-group-item"><strong>Total Assists:</strong> {{ player.stats|sum(attribute='assists') }}</li>
-                        <li class="list-group-item"><strong>Total Steals:</strong> {{ player.stats|sum(attribute='steals') }}</li>
-                        <li class="list-group-item"><strong>Total Blocks:</strong> {{ player.stats|sum(attribute='blocks') }}</li>
+                        <li class="list-group-item"><strong>Total Points:</strong> {{ player.stats|sum(attribute='points') if player.stats else 0 }}</li>
+                        <li class="list-group-item"><strong>Total Rebounds:</strong> {{ player.stats|sum(attribute='rebounds') if player.stats else 0 }}</li>
+                        <li class="list-group-item"><strong>Total Assists:</strong> {{ player.stats|sum(attribute='assists') if player.stats else 0 }}</li>
+                        <li class="list-group-item"><strong>Total Steals:</strong> {{ player.stats|sum(attribute='steals') if player.stats else 0 }}</li>
+                        <li class="list-group-item"><strong>Total Blocks:</strong> {{ player.stats|sum(attribute='blocks') if player.stats else 0 }}</li>
                     </ul>
                 </div>
                 <div class="card-footer">
