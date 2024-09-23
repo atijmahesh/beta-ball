@@ -41,7 +41,7 @@
                     </ul>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ url_for('current_season') }}" class="btn btn-primary">Back to Current Season</a>
+                    <a href="{{ url_for('current_season', season_id=player.team.season.id) }}" class="btn btn-primary">Back to Current Season</a>
                 </div>
             </div>
         </div>
